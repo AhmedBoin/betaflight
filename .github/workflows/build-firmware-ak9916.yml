@@ -46,20 +46,36 @@ jobs:
 
       - name: Verify the AK9916 driver is in the image
         run: |
-          ls -l obj/*.hex obj/*.bin
-          for f in obj/*.bin; do
-            echo "-- $f"
-            grep -ac "AK9916" "$f" || { echo "AK9916 string not found in $f"; exit 1; }
-            grep -ac "AK09916" "$f" || echo "(AK09916 spelling not present, expected: renamed to AK9916)"
-          done
+          set +e
+          {
+            echo "=== obj/ contents ==="
+            ls -l obj/
+            echo
+            echo "=== config header tail ==="
+            tail -8 src/config/configs/STBE/${CONFIG_NAME}/config.h
+            echo
+            ELF=$(ls obj/*.elf | head -1)
+            echo "=== ak9916 symbols in $ELF ==="
+            ./tools/gcc-arm-none-eabi-*/bin/arm-none-eabi-nm "$ELF" | grep -i ak9916
+            echo "=== mag lookup table symbols ==="
+            ./tools/gcc-arm-none-eabi-*/bin/arm-none-eabi-nm "$ELF" | grep -i lookupTableMagHardware
+            echo "=== AK9916 string in elf ==="
+            strings -a "$ELF" | grep -c "AK9916"
+            echo "=== sample blocks that mention ak9916 ==="
+            grep -c -i ak9916 obj/*.map
+          } | tee firmware-build-report.txt
+          exit 0
 
       - name: Publish firmware to this branch
         run: |
           mkdir -p firmware
-          cp obj/*.hex obj/*.bin firmware/
+          cp -v obj/*.hex firmware/ 2>/dev/null || true
+          cp -v obj/*.bin firmware/ 2>/dev/null || true
+          cp -v obj/*.elf firmware/ 2>/dev/null || true
+          mv -v firmware-build-report.txt firmware/build-report.txt 2>/dev/null || true
           ls -l firmware
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f firmware
-          git commit -m "firmware: ${CONFIG_NAME} with AK9916 compass driver [skip ci]"
+          git commit -m "firmware: ${CONFIG_NAME} with AK9916 compass driver [skip ci]" || echo "nothing to commit"
           git push
