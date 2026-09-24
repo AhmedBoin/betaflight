@@ -1,13 +1,6 @@
 === compiler ===
 
-=== final artifacts (obj/) ===
-total 1552
--rw-r--r-- 1 runner runner 1581261 Sep 24 08:08 betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
-drwxr-xr-x 3 runner runner    4096 Sep 24 08:07 main
-
-=== config header tail (must contain USE_MAG / USE_MAG_AK9916) ===
-#define BOX_USER1_NAME       "CAM 1,2"
-
+=== config header tail ===
 #ifndef USE_MAG
 #define USE_MAG
 #endif
@@ -15,44 +8,20 @@ drwxr-xr-x 3 runner runner    4096 Sep 24 08:07 main
 #define USE_MAG_AK9916
 #endif
 
-=== compass object files in the build ===
-obj/main/STM32F405_STELLARF4V2/drivers/compass
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak8963.d
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak8963.o
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak8975.d
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak8975.o
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak9916.d
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak9916.o
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_bmm350.d
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_bmm350.o
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_hmc5883l.d
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_hmc5883l.o
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ist8310.d
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ist8310.o
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_lis2mdl.d
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_lis2mdl.o
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_lis3mdl.d
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_lis3mdl.o
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_mmc560x.d
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_mmc560x.o
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_mpu925x_ak8963.d
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_mpu925x_ak8963.o
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_qmc5883.d
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_qmc5883.o
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_virtual.d
-obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_virtual.o
-obj/main/STM32F405_STELLARF4V2/sensors/compass.d
-obj/main/STM32F405_STELLARF4V2/sensors/compass.o
+=== driver object symbols (body empty unless USE_MAG_AK9916) ===
 
-=== symbols in compass_ak9916.o (only non-empty when USE_MAG_AK9916 is defined) ===
+=== sensors/compass.o symbols (compassInit etc. only exist with USE_MAG) ===
 
-=== symbols in sensors/compass.o (only present when USE_MAG is defined) ===
+=== object sizes ===
+-rw-r--r-- 1 runner runner 16660 Sep 24 08:11 obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak8963.o
+-rw-r--r-- 1 runner runner 11912 Sep 24 08:11 obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak9916.o
+-rw-r--r-- 1 runner runner 24676 Sep 24 08:11 obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_bmm350.o
+-rw-r--r-- 1 runner runner 38248 Sep 24 08:11 obj/main/STM32F405_STELLARF4V2/sensors/compass.o
 
-=== size of the compass objects ===
-ls: cannot access 'obj/main/drivers/compass/compass_ak9916.o': No such file or directory
-ls: cannot access 'obj/main/sensors/compass.o': No such file or directory
-ls: cannot access 'obj/main/sensors/compass_ak8963.o': No such file or directory
+=== image sizes: magnetometer enabled vs baseline ===
+-rw-r--r-- 1 runner runner 1551428 Sep 24 08:10 firmware/baseline_STELLARF4V2.hex
+-rw-r--r-- 1 runner runner 1581261 Sep 24 08:11 obj/betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
 
-=== final image ===
--rw-r--r-- 1 runner runner 1581261 Sep 24 08:08 obj/betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
-8f6d45f0694ac298e7bb3acc37a98121e9d333c52b5ea1e22f92f19d6d72fbfb  obj/betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
+=== hashes ===
+6f9e8095dc09213b3e08dddfd680c2c9dc72822d48a11cdb15f4ff858b3daac2  obj/betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
+6d3c6179598f72e7f37941035a539f075d5c89f1c87d69cea15eaea5b18b1d47  firmware/baseline_STELLARF4V2.hex
