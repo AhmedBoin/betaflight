@@ -44,25 +44,35 @@ jobs:
       - name: Build ${CONFIG_NAME}
         run: make EXTRA_FLAGS=-Werror ${CONFIG_NAME}
 
-      - name: Verify the AK9916 driver is in the image
+      - name: Verify the AK9916 driver is in the build
         run: |
           set +e
+          NM=$(ls tools/gcc-arm-none-eabi-*/bin/arm-none-eabi-nm | head -1)
           {
-            echo "=== obj/ contents ==="
+            echo "=== compiler ==="
+            $(dirname "$NM")/arm-none-eabi-gcc --version | head -1
+            echo
+            echo "=== final artifacts (obj/) ==="
             ls -l obj/
             echo
-            echo "=== config header tail ==="
+            echo "=== config header tail (must contain USE_MAG / USE_MAG_AK9916) ==="
             tail -8 src/config/configs/STBE/${CONFIG_NAME}/config.h
             echo
-            ELF=$(ls obj/*.elf | head -1)
-            echo "=== ak9916 symbols in $ELF ==="
-            ./tools/gcc-arm-none-eabi-*/bin/arm-none-eabi-nm "$ELF" | grep -i ak9916
-            echo "=== mag lookup table symbols ==="
-            ./tools/gcc-arm-none-eabi-*/bin/arm-none-eabi-nm "$ELF" | grep -i lookupTableMagHardware
-            echo "=== AK9916 string in elf ==="
-            strings -a "$ELF" | grep -c "AK9916"
-            echo "=== sample blocks that mention ak9916 ==="
-            grep -c -i ak9916 obj/*.map
+            echo "=== compass object files in the build ==="
+            find obj/main -name '*ak9916*' -o -name '*compass*' | sort
+            echo
+            echo "=== symbols in compass_ak9916.o (only non-empty when USE_MAG_AK9916 is defined) ==="
+            $NM obj/main/drivers/compass/compass_ak9916.o | grep -i ak9916
+            echo
+            echo "=== symbols in sensors/compass.o (only present when USE_MAG is defined) ==="
+            $NM obj/main/sensors/compass.o | grep -E "compassInit|compassUpdate|compassDetect|ak9916"
+            echo
+            echo "=== size of the compass objects ==="
+            ls -l obj/main/drivers/compass/compass_ak9916.o obj/main/sensors/compass.o obj/main/sensors/compass_ak8963.o 2>&1
+            echo
+            echo "=== final image ==="
+            ls -l obj/*.hex
+            sha256sum obj/*.hex
           } | tee firmware-build-report.txt
           exit 0
 
