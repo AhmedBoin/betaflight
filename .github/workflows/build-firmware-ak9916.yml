@@ -1,11 +1,13 @@
-# Builds a firmware image for a single unified target with the AK9916
-# (AK09916) magnetometer enabled, and commits the resulting .hex back into this
-# branch. Also builds a baseline image (magnetometer disabled) so the two can be
-# compared on hardware, and records symbol/size evidence that the new driver is
-# really linked in.
+# Builds firmware images for the STBE Stellar F4 boards (both revisions) with
+# the AK9916 (AK09916) magnetometer enabled, and commits the resulting .hex
+# files back into this branch.
 #
-# This exists because the machine that authored the driver has no usable
-# ARM toolchain; the GitHub runner has the required network access.
+# A baseline image (magnetometer disabled) is built as well, so the two can be
+# compared on hardware and the build report can show that the magnetometer
+# subsystem is really linked in.
+#
+# This exists because the machine that authored the driver has no usable ARM
+# toolchain; the GitHub runner has the required network access.
 
 name: Build firmware (AK9916)
 
@@ -20,10 +22,16 @@ permissions:
 
 jobs:
   build:
-    name: Build STELLARF4V2 firmware
+    name: Build ${{ matrix.config }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # both jobs commit into this branch, so serialise them
+      max-parallel: 1
+      matrix:
+        config: [STELLARF4V2, STELLARF4]
     env:
-      CONFIG_NAME: STELLARF4V2
+      CONFIG_NAME: ${{ matrix.config }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -42,7 +50,7 @@ jobs:
           mkdir -p firmware
           cp -v obj/*.hex "firmware/baseline_${CONFIG_NAME}.hex"
 
-      - name: Enable the magnetometer on ${{ env.CONFIG_NAME }}
+      - name: Enable the magnetometer on ${{ matrix.config }}
         run: |
           header="src/config/configs/STBE/${CONFIG_NAME}/config.h"
           printf '\n#ifndef USE_MAG\n#define USE_MAG\n#endif\n#ifndef USE_MAG_AK9916\n#define USE_MAG_AK9916\n#endif\n' >> "$header"
@@ -55,29 +63,24 @@ jobs:
         run: |
           set +e
           OBJDIR=$(ls -d obj/main/*${CONFIG_NAME})
-          NM=$(ls tools/gcc-arm-none-eabi-*/bin/arm-none-eabi-nm | head -1)
           {
-            echo "=== compiler ==="
-            "$(dirname "$NM")/arm-none-eabi-gcc" --version | head -1
+            echo "### ${CONFIG_NAME}"
             echo
             echo "=== config header tail ==="
-            tail -6 src/config/configs/STBE/${CONFIG_NAME}/config.h
+            tail -6 "src/config/configs/STBE/${CONFIG_NAME}/config.h"
             echo
-            echo "=== driver object symbols (body empty unless USE_MAG_AK9916) ==="
-            $NM "$OBJDIR/drivers/compass/compass_ak9916.o" | grep -i ak9916
-            echo
-            echo "=== sensors/compass.o symbols (compassInit etc. only exist with USE_MAG) ==="
-            $NM "$OBJDIR/sensors/compass.o" | grep -E "compassInit|compassUpdate|ak9916"
-            echo
-            echo "=== object sizes ==="
-            ls -l "$OBJDIR/drivers/compass/compass_ak9916.o" "$OBJDIR/sensors/compass.o" "$OBJDIR/drivers/compass/compass_bmm350.o" "$OBJDIR/drivers/compass/compass_ak8963.o"
+            echo "=== compass driver objects (empty bodies unless USE_MAG_AK9916 / USE_MAG) ==="
+            ls -l "$OBJDIR/drivers/compass/compass_ak9916.o" \
+                  "$OBJDIR/drivers/compass/compass_ak8963.o" \
+                  "$OBJDIR/drivers/compass/compass_bmm350.o" \
+                  "$OBJDIR/sensors/compass.o" 2>&1
             echo
             echo "=== image sizes: magnetometer enabled vs baseline ==="
             ls -l obj/*.hex "firmware/baseline_${CONFIG_NAME}.hex"
             echo
             echo "=== hashes ==="
             sha256sum obj/*.hex "firmware/baseline_${CONFIG_NAME}.hex"
-          } | tee firmware/build-report.txt
+          } | tee "firmware/build-report-${CONFIG_NAME}.txt"
           exit 0
 
       - name: Publish firmware to this branch
@@ -86,6 +89,7 @@ jobs:
           ls -l firmware
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase --autostash || true
           git add -f firmware
           git commit -m "firmware: ${CONFIG_NAME} with AK9916 compass driver [skip ci]" || echo "nothing to commit"
           git push
