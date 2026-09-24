@@ -1,0 +1,23 @@
+### STELLARF4
+
+=== config header tail ===
+#ifndef USE_MAG
+#define USE_MAG
+#endif
+#ifndef USE_MAG_AK9916
+#define USE_MAG_AK9916
+#endif
+
+=== compass driver objects (empty bodies unless USE_MAG_AK9916 / USE_MAG) ===
+-rw-r--r-- 1 runner runner 16660 Sep 24 08:19 obj/main/STM32F405_STELLARF4/drivers/compass/compass_ak8963.o
+-rw-r--r-- 1 runner runner 11912 Sep 24 08:19 obj/main/STM32F405_STELLARF4/drivers/compass/compass_ak9916.o
+-rw-r--r-- 1 runner runner 24676 Sep 24 08:19 obj/main/STM32F405_STELLARF4/drivers/compass/compass_bmm350.o
+-rw-r--r-- 1 runner runner 38248 Sep 24 08:19 obj/main/STM32F405_STELLARF4/sensors/compass.o
+
+=== image sizes: magnetometer enabled vs baseline ===
+-rw-r--r-- 1 runner runner 1567064 Sep 24 08:19 firmware/baseline_STELLARF4.hex
+-rw-r--r-- 1 runner runner 1596921 Sep 24 08:19 obj/betaflight_2026.12.0-alpha_STM32F405_STELLARF4.hex
+
+=== hashes ===
+a783e9644522f65a6077a246dc3ff827ccb3aa3fefadd5fccabbf8ce3b2b8c43  obj/betaflight_2026.12.0-alpha_STM32F405_STELLARF4.hex
+0980670b21e5fd9462bfbb1e05a48692246c608cedea98db391592a439aec917  firmware/baseline_STELLARF4.hex
