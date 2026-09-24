@@ -1,0 +1,65 @@
+# Builds a firmware image for a single unified target with the AK9916
+# (AK09916) magnetometer enabled, and commits the resulting .hex/.bin back
+# into this branch so it can be downloaded.
+#
+# This exists because the machine that authored the driver cannot run the
+# ARM toolchain locally; the GitHub runner has the required network access.
+
+name: Build firmware (AK9916)
+
+on:
+  push:
+    branches:
+      - firmware/ak9916-stellarf4v2
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build STELLARF4V2 firmware
+    runs-on: ubuntu-latest
+    env:
+      CONFIG_NAME: STELLARF4V2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Init config submodule
+        run: git submodule update --init -- src/config
+
+      - name: Install ARM toolchain
+        run: make SDK=arm platform-tools-install
+
+      - name: Enable the magnetometer on ${{ env.CONFIG_NAME }}
+        run: |
+          header="src/config/configs/STBE/${CONFIG_NAME}/config.h"
+          printf '\n#ifndef USE_MAG\n#define USE_MAG\n#endif\n#ifndef USE_MAG_AK9916\n#define USE_MAG_AK9916\n#endif\n' >> "$header"
+          tail -6 "$header"
+
+      - name: Show compiler version
+        run: make SDK=arm platform-tools-version || ./tools/gcc-arm-none-eabi-*/bin/arm-none-eabi-gcc --version | head -1
+
+      - name: Build ${CONFIG_NAME}
+        run: make EXTRA_FLAGS=-Werror ${CONFIG_NAME}
+
+      - name: Verify the AK9916 driver is in the image
+        run: |
+          ls -l obj/*.hex obj/*.bin
+          for f in obj/*.bin; do
+            echo "-- $f"
+            grep -ac "AK9916" "$f" || { echo "AK9916 string not found in $f"; exit 1; }
+            grep -ac "AK09916" "$f" || echo "(AK09916 spelling not present, expected: renamed to AK9916)"
+          done
+
+      - name: Publish firmware to this branch
+        run: |
+          mkdir -p firmware
+          cp obj/*.hex obj/*.bin firmware/
+          ls -l firmware
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f firmware
+          git commit -m "firmware: ${CONFIG_NAME} with AK9916 compass driver [skip ci]"
+          git push
