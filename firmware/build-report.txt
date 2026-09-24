@@ -1,9 +1,11 @@
-=== obj/ contents ===
-total 1552
--rw-r--r-- 1 runner runner 1581261 Sep 24 08:03 betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
-drwxr-xr-x 3 runner runner    4096 Sep 24 08:03 main
+=== compiler ===
 
-=== config header tail ===
+=== final artifacts (obj/) ===
+total 1552
+-rw-r--r-- 1 runner runner 1581261 Sep 24 08:08 betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
+drwxr-xr-x 3 runner runner    4096 Sep 24 08:07 main
+
+=== config header tail (must contain USE_MAG / USE_MAG_AK9916) ===
 #define BOX_USER1_NAME       "CAM 1,2"
 
 #ifndef USE_MAG
@@ -13,8 +15,44 @@ drwxr-xr-x 3 runner runner    4096 Sep 24 08:03 main
 #define USE_MAG_AK9916
 #endif
 
-=== ak9916 symbols in  ===
-=== mag lookup table symbols ===
-=== AK9916 string in elf ===
-0
-=== sample blocks that mention ak9916 ===
+=== compass object files in the build ===
+obj/main/STM32F405_STELLARF4V2/drivers/compass
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak8963.d
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak8963.o
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak8975.d
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak8975.o
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak9916.d
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak9916.o
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_bmm350.d
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_bmm350.o
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_hmc5883l.d
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_hmc5883l.o
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ist8310.d
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ist8310.o
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_lis2mdl.d
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_lis2mdl.o
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_lis3mdl.d
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_lis3mdl.o
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_mmc560x.d
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_mmc560x.o
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_mpu925x_ak8963.d
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_mpu925x_ak8963.o
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_qmc5883.d
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_qmc5883.o
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_virtual.d
+obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_virtual.o
+obj/main/STM32F405_STELLARF4V2/sensors/compass.d
+obj/main/STM32F405_STELLARF4V2/sensors/compass.o
+
+=== symbols in compass_ak9916.o (only non-empty when USE_MAG_AK9916 is defined) ===
+
+=== symbols in sensors/compass.o (only present when USE_MAG is defined) ===
+
+=== size of the compass objects ===
+ls: cannot access 'obj/main/drivers/compass/compass_ak9916.o': No such file or directory
+ls: cannot access 'obj/main/sensors/compass.o': No such file or directory
+ls: cannot access 'obj/main/sensors/compass_ak8963.o': No such file or directory
+
+=== final image ===
+-rw-r--r-- 1 runner runner 1581261 Sep 24 08:08 obj/betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
+8f6d45f0694ac298e7bb3acc37a98121e9d333c52b5ea1e22f92f19d6d72fbfb  obj/betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
