@@ -1,23 +1,23 @@
 ### STELLARF4V2
 
 === config header tail ===
+#ifndef USE_MAG
+#define USE_MAG
+#endif
 #ifndef USE_MAG_AK9916
 #define USE_MAG_AK9916
 #endif
 
-#define UART1_TX_PIN PA9
-#define UART1_RX_PIN PA10
-
 === compass driver objects (empty bodies unless USE_MAG_AK9916 / USE_MAG) ===
--rw-r--r-- 1 runner runner 16660 Sep 24 08:49 obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak8963.o
--rw-r--r-- 1 runner runner 11912 Sep 24 08:49 obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak9916.o
--rw-r--r-- 1 runner runner 24676 Sep 24 08:49 obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_bmm350.o
--rw-r--r-- 1 runner runner 38248 Sep 24 08:49 obj/main/STM32F405_STELLARF4V2/sensors/compass.o
+-rw-r--r-- 1 runner runner 16660 Sep 24 09:52 obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak8963.o
+-rw-r--r-- 1 runner runner 11912 Sep 24 09:52 obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_ak9916.o
+-rw-r--r-- 1 runner runner 24676 Sep 24 09:52 obj/main/STM32F405_STELLARF4V2/drivers/compass/compass_bmm350.o
+-rw-r--r-- 1 runner runner 38220 Sep 24 09:52 obj/main/STM32F405_STELLARF4V2/sensors/compass.o
 
 === image sizes: magnetometer enabled vs baseline ===
--rw-r--r-- 1 runner runner 1551428 Sep 24 08:49 firmware/baseline_STELLARF4V2.hex
--rw-r--r-- 1 runner runner 1581261 Sep 24 08:49 obj/betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
+-rw-r--r-- 1 runner runner 1551428 Sep 24 09:52 firmware/baseline_STELLARF4V2.hex
+-rw-r--r-- 1 runner runner 1581261 Sep 24 09:52 obj/betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
 
 === hashes ===
-7c3b8e88ff065418f336258cfad0fe01b8227c52d5554f64cfe2f777579a8baa  obj/betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
-02db2a553411d52bc619ffb3aba508fece43641b3fdc054304461957aadaca15  firmware/baseline_STELLARF4V2.hex
+3f213f1836fa523a9c1d29cdf96e172620ad07ae8d203cbceef4be7db9070cad  obj/betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
+6dd733a475004650469ba9a4c8241dabc8017571a86a20c15880c99124e24d49  firmware/baseline_STELLARF4V2.hex
