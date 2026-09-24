@@ -1,0 +1,20 @@
+=== obj/ contents ===
+total 1552
+-rw-r--r-- 1 runner runner 1581261 Sep 24 08:03 betaflight_2026.12.0-alpha_STM32F405_STELLARF4V2.hex
+drwxr-xr-x 3 runner runner    4096 Sep 24 08:03 main
+
+=== config header tail ===
+#define BOX_USER1_NAME       "CAM 1,2"
+
+#ifndef USE_MAG
+#define USE_MAG
+#endif
+#ifndef USE_MAG_AK9916
+#define USE_MAG_AK9916
+#endif
+
+=== ak9916 symbols in  ===
+=== mag lookup table symbols ===
+=== AK9916 string in elf ===
+0
+=== sample blocks that mention ak9916 ===
