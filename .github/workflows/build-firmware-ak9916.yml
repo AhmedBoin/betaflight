@@ -50,21 +50,12 @@ jobs:
           mkdir -p firmware
           cp -v obj/*.hex "firmware/baseline_${CONFIG_NAME}.hex"
 
-      - name: Board config patch (magnetometer + UART1 on V2)
+      - name: Board config patch (magnetometer only)
         run: |
           header="src/config/configs/STBE/${CONFIG_NAME}/config.h"
           printf '\n#ifndef USE_MAG\n#define USE_MAG\n#endif\n#ifndef USE_MAG_AK9916\n#define USE_MAG_AK9916\n#endif\n' >> "$header"
-          if [ "${CONFIG_NAME}" = "STELLARF4V2" ]; then
-            # PA9/PA10 are declared as SERVO5/SERVO6 in the V2 config, but the
-            # pads are USART1 TX/RX. UART1 is compiled in for STM32F405 but its
-            # pins default to NONE, which makes the port unusable. Expose them as
-            # UART1 and drop the servo defaults.
-            sed -i 's|^#define SERVO5_PIN.*|// PA9  - used as UART1_TX_PIN|' "$header"
-            sed -i 's|^#define SERVO6_PIN.*|// PA10 - used as UART1_RX_PIN|' "$header"
-            printf '\n#define UART1_TX_PIN PA9\n#define UART1_RX_PIN PA10\n' >> "$header"
-          fi
-          grep -nE 'USE_MAG|UART1_(TX|RX)_PIN|SERVO[56]_PIN' "$header" || true
-          tail -8 "$header"
+          grep -nE 'USE_MAG' "$header" || true
+          tail -6 "$header"
 
       - name: Build with magnetometer
         run: make EXTRA_FLAGS=-Werror ${CONFIG_NAME}
@@ -95,11 +86,21 @@ jobs:
 
       - name: Publish firmware to this branch
         run: |
+          mkdir -p firmware
+          # keep the earlier "UART1 on PA9/PA10" V2 experiment available under a
+          # distinct name before it is overwritten by the configuration below
+          if [ "${CONFIG_NAME}" = "STELLARF4V2" ]; then
+            for f in firmware/betaflight_*_STM32F405_STELLARF4V2.hex; do
+              [ -f "$f" ] || continue
+              cp -v "$f" "firmware/variant_uart1_on_PA9_PA10_$(basename "$f")"
+              break
+            done
+          fi
           cp -v obj/*.hex firmware/ 2>/dev/null || true
           ls -l firmware
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git pull --rebase --autostash || true
           git add -f firmware
-          git commit -m "firmware: ${CONFIG_NAME} with AK9916 compass driver [skip ci]" || echo "nothing to commit"
+          git commit -m "firmware: ${CONFIG_NAME} with AK9916 compass driver (no UART1 change) [skip ci]" || echo "nothing to commit"
           git push
